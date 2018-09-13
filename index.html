@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Simple Blockchain Application</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+	<link rel="stylesheet" href="/assets/css/main_style.css">
+
+	<script src="/assets/vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script src="/assets/vendor/bootstrap/js/popper.js"></script>
+	<script src="/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+</head>
+<body>
+
+	<div class="mywelcome-title"><h5>Simple Blockchain Application</h5></div>
+	<div class="mywelcome-title2">This is simple blockchain application written on NodeJs. <br/>Below are links for quick access to main features and source code: <br/>
+		<div style="padding-top: 10px;"><a href="/validateblocks" target="blank_">Blockchain Validation</a> |
+		<a href="/blocks"  target="blank_">Block List</a> |
+		<a href="https://github.com/dev2060/simple_blockchain" target="blank_">Source Code</a>
+		</div>
+	</div>
+	<div class="contact1">
+		<div class="container-contact1">
+
+
+			<div>
+				<div class="contact1-form validate-form">
+					<span class="contact1-form-title">
+						Add new block
+					</span>
+
+					<div class="wrap-input1 validate-input" data-validate = "Name is required">
+						<input class="input1" type="text" name="name" placeholder="User" id="user_">
+						<span class="shadow-input1"></span>
+					</div>
+
+					<div class="wrap-input1 validate-input" data-validate = "Value is required" >
+						<input class="input1" type="text" name="email" placeholder="Value" id="value_">
+						<span class="shadow-input1"></span>
+					</div>
+
+
+					<div class="container-contact1-form-btn">
+						<button class="contact1-form-btn" id="new_block">
+							<span>
+								Add block
+								
+							</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="contact1-form validate-form">
+					<span class="contact1-form-title">
+						Blockhain Data
+					</span>
+
+					<div class="wrap-input1 validate-input" data-validate = "Blockchain Data is required">
+						<textarea class="input1" name="message" placeholder="Blockchain Data" id="data_"></textarea>
+						<span class="shadow-input1"></span>
+					</div>
+
+					<div class="container-contact1-form-btn">
+
+						<button class="contact1-form-btn" id="save_changes">
+							<span>
+								Save to file
+								
+							</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script>
+		var socket__io;
+		function isEmpty_(str) {
+			return (!str || 0 === str.length);
+		}
+
+		$(function () {
+			// alert('');
+			socket__io = io.connect('https://simpleblockchain.ml:3000',{secure: true});
+
+	        $('#new_block').click(function(){
+	        	var name_ = document.getElementById("user_").value;
+	        	var value_ = document.getElementById("value_").value;
+	            var block_data_ = {
+	              user: name_,
+	              value: value_
+	            };
+	            if (isEmpty_(name_) || isEmpty_(value_)) {
+	            	alert('field is empty ');
+	            }
+	            else {
+	            	socket__io.emit('new_block_message', block_data_);
+	            }
+	            
+	            return false;
+	        });
+
+	        //save changes
+	        $('#save_changes').click(function(){
+	        	var blockchain_data = document.getElementById("data_").value;
+	            var blockchainRawData = {
+	              blockchain_data: blockchain_data
+	            };
+	            if (isEmpty_(blockchain_data) ) {
+	            	alert('field is empty');
+	            }
+	            else {
+	            	socket__io.emit('blockchain_manual_update_message', blockchainRawData);
+	            }
+	            
+	            return false;
+	        });
+
+
+
+	        socket__io.on('on_manual_update', function(isSuccess){
+	        	console.log("blockchain database was modified by user: " + isSuccess);
+	        });
+	        socket__io.on('raw_blockchain_data', function(blockchainData){
+	        	// console.log(blockchainData);
+	        	console.log("raw blockhain data was sent");
+	        	document.getElementById("data_").value = blockchainData;
+	        });
+
+		});
+	</script> 
+
+
+
+</body>
+</html>
