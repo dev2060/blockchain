@@ -82,7 +82,7 @@ var initHttpServer = () => {
     });
     app.post('/addNewBlock', (req, res) => {
         var newBlockData = req.body.data;
-        addBlockToChain(newBlockData);
+        tryAddNewBlockToBlockchain(newBlockData);
 
         console.log('block added: ' + JSON.stringify(newBlock));
         res.send();
@@ -131,7 +131,7 @@ function addBlockToChain(blockData_) {
     else return false;
 };
 
-var isBlockValid = (currentBlock, previousBlock) => {
+function isBlockValid (currentBlock, previousBlock) {
     if (previousBlock.index + 1 !== currentBlock.index) {
         console.log('error: invalid index');
         return false;
@@ -169,6 +169,7 @@ function tryAddNewBlockToBlockchain(blockdata_) {
 
 function validateAllBlocksInChain() {
     var res = true;
+    console.log( JSON.stringify( blockchain[0] ));
     if (blockchain.length == 1) {return true;}
     for (var i=1; i<blockchain.length; i++) {//we starts from index 1 in order to satisfy condition [current | previous]
         console.log( JSON.stringify( blockchain[i] ));
